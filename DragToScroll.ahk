@@ -474,6 +474,7 @@ DragStart:
   ; initialize scrolling
   if (DragStatus == DS_NEW)
   {
+    DebugOut("DragNew")
     ; Update the status, we're dragging now
     DragStatus := DS_DRAGGING
     
@@ -503,6 +504,7 @@ DragStart:
   }
   Else
   {
+    DebugOut("dragging")
     ; DragStatus is now DRAGGING
     ; get the new mouse position and new hovering window
     MouseGetPos, NewX, NewY, NewWinHwnd, NewCtrlHwnd, 3
@@ -537,7 +539,9 @@ DragStart:
     DiffY := NewY - OldY
     if (abs(DiffY) > DragThreshold)
     {
+      DebugOut("before settimer")
       SetTimer, MovementCheck, Off
+      DebugOut("before scroll")
       Scroll(DiffY)
       if (DragThreshold > 0) && (!KeepCursorStationary)
         OldY := NewY
@@ -701,6 +705,7 @@ Scroll(arg, horizontal="", format="px")
   ; get the speed and direction from arg arg
   Direction := ( arg < 0 ? -1 : 1 ) * ( Get("InvertDrag") ? -1 : 1 )
   Factor := abs( arg )
+  DebugOut(Factor)
   
   ; Special "hidden" setting, for edge cases (visual studio 2010)
   if (horizontal && Get("InvertDragX"))
@@ -762,9 +767,13 @@ Scroll(arg, horizontal="", format="px")
       wparam := Direction < 0 ? "{WheelDown}" : "{WheelUp}"
     else
       wparam := Direction < 0 ? "{WheelRight}" : "{WheelLeft}"
-      
+    Factor := Ceil(Factor) 
+    DebugOut(Factor)
     Loop, %Factor%
+    {
+      DebugOut(wparam)
       Send, %wparam%
+    }
   }
   else if (Method = mScrollMessage)
   {
@@ -1595,5 +1604,9 @@ ToolTip(Text, visibleSec=2)
   ToolTipCancel:
   ToolTip
   Return
+}
+
+DebugOut(Text){
+  FileAppend, %Text%`n, drag2scroll.log
 }
 
