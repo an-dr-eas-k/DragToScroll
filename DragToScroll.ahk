@@ -274,7 +274,7 @@ Return
 ; Constants
 ;--------------------------------
 Constants:
-  VERSION = 2.5
+  VERSION = 2.6-ak
   DEBUG = 0
   WM_HSCROLL = 0x114
   WM_VSCROLL = 0x115
@@ -539,9 +539,8 @@ DragStart:
     DiffY := NewY - OldY
     if (abs(DiffY) > DragThreshold)
     {
-      DebugOut("before settimer")
       SetTimer, MovementCheck, Off
-      DebugOut("before scroll")
+      DebugOut("before scroll oldY: " . OldY . ", newY: " . NewY . ", OriginalY: " . OriginalY . ", DiffY: " . DiffY)
       Scroll(DiffY)
       if (DragThreshold > 0) && (!KeepCursorStationary)
         OldY := NewY
@@ -705,7 +704,7 @@ Scroll(arg, horizontal="", format="px")
   ; get the speed and direction from arg arg
   Direction := ( arg < 0 ? -1 : 1 ) * ( Get("InvertDrag") ? -1 : 1 )
   Factor := abs( arg )
-  DebugOut(Factor)
+  DebugOut("scroll arg: " . Factor)
   
   ; Special "hidden" setting, for edge cases (visual studio 2010)
   if (horizontal && Get("InvertDragX"))
@@ -768,10 +767,9 @@ Scroll(arg, horizontal="", format="px")
     else
       wparam := Direction < 0 ? "{WheelRight}" : "{WheelLeft}"
     Factor := Ceil(Factor) 
-    DebugOut(Factor)
+    DebugOut("Factor: " . Factor)
     Loop, %Factor%
     {
-      DebugOut(wparam)
       Send, %wparam%
     }
   }
